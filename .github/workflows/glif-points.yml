@@ -7,9 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: file
+        run: echo "::set-output name=file::`date '+%Y-%m-%d'`.json"
       - run: |
-          curl --fail https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday > `date '+%Y-%m-%d'`.json
+          curl --fail https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday > ${{ steps.file.outputs.file }}
       - uses: EndBug/add-and-commit@v9
+        with:
+          add: ${{ steps.file.outputs.file }}
+          commit: --signoff
+          message: ${{ steps.file.outputs.file }}
       - if: failure()
         uses: slackapi/slack-github-action@v1.27.0
         with:
