@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "0 12 * * *" # Once per day
+    - cron: "0 13,14 * * *" # Once per day + one retry
   push:
 jobs:
   archive:
