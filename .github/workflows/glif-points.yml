@@ -8,10 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          curl --fail https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday > top-measurements.json
-      - uses: softprops/action-gh-release@v2
-        with:
-            files: top-measurements.json
+          curl --fail https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday > `date '+%Y-%m-%d'`.json
+      - uses: EndBug/add-and-commit@v9
       - if: failure()
         uses: slackapi/slack-github-action@v1.27.0
         with:
