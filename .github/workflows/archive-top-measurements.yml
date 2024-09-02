@@ -1,0 +1,40 @@
+on:
+  schedule:
+    - cron: "0 13,14 * * *" # Once per day + one retry
+  push:
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - id: file
+        run: echo "file=`date -d \"yesterday 12:00\" '+%Y-%m-%d'`.json" >> $GITHUB_OUTPUT
+      - run: |
+          curl --fail "https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday" > ${{ steps.file.outputs.file }}
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: ${{ steps.file.outputs.file }}
+          commit: --signoff
+          message: ${{ steps.file.outputs.file }}
+          push: origin main
+      - if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: alerts
+          payload: |
+            {
+              "text": "Top measurements archival failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":warning: *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Top measurements archival failed>*"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
