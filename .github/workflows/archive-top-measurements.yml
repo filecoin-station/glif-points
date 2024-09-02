@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        ref: main
       - id: file
         run: echo "::set-output name=file::`date '+%Y-%m-%d'`.json"
       - run: |
@@ -16,6 +17,7 @@ jobs:
           add: ${{ steps.file.outputs.file }}
           commit: --signoff
           message: ${{ steps.file.outputs.file }}
+          push: origin main
       - if: failure()
         uses: slackapi/slack-github-action@v1.27.0
         with:
