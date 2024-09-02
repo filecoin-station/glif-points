@@ -10,7 +10,7 @@ jobs:
         with:
           ref: main
       - id: file
-        run: echo "file::`date '+%Y-%m-%d'`.json" >> $GITHUB_OUTPUT
+        run: echo "file=`date '+%Y-%m-%d'`.json" >> $GITHUB_OUTPUT
       - run: |
           curl --fail "https://stats.filspark.com/participants/top-measurements?from=yesterday&to=yesterday" > ${{ steps.file.outputs.file }}
       - uses: EndBug/add-and-commit@v9
